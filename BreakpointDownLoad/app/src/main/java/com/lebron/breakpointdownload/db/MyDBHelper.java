@@ -13,9 +13,12 @@ import android.util.Log;
  */
 public class MyDBHelper extends SQLiteOpenHelper{
     private static final String DB_NAME = "download.db";
-    private static final String SQL_CREATE = "create table thread_info(_id integer primary key autoincrement," +
-            "thread_id integer,url text,start long,end long,finished long,progress integer)";
-    private static final String SQL_DROP = "drop table if exists thread_info";
+    /**
+     * 数据库字段：自增_id, id, url, start, end, finished, progress
+     */
+    private static final String SQL_CREATE = "create table download_info(_id integer primary key autoincrement," +
+            "id integer,url text,start long,end long,finished long,progress integer)";
+    private static final String SQL_DROP = "drop table if exists download_info";
     private static final int VERSION = 1;
     private static final String TAG = "MyDBHelper";
 
@@ -32,7 +35,7 @@ public class MyDBHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE);
-        Log.i(TAG, "onCreate: 创建数据库表 thread_info");
+        Log.i(TAG, "onCreate: 创建数据库表 download_info");
     }
 
     @Override
