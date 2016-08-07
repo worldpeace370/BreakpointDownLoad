@@ -28,6 +28,7 @@ import java.util.Map;
  */
 public class DownloadService extends Service{
     private static final String TAG = "DownloadService";
+    private String mTaskFlag = "";
     private static final int MSG_INIT = 0;
     //开始下载
     public static final String ACTION_START = "ACTION_START";
@@ -74,7 +75,13 @@ public class DownloadService extends Service{
             mDownloadTaskMap.put(fileInfo.getUrl(), downloadTask);
         }
         downloadTask.setPause(false);
-        downloadTask.downloadInOneThread();
+        if (mTaskFlag.equals("one")){
+            downloadTask.downloadInOneThread();
+        }else if (mTaskFlag.equals("much")){
+            //单任务多线程下载模式，有点问题
+//            downloadTask.downloadInMuchThread();
+            downloadTask.downloadInOneThread();
+        }
     }
 
     @Override
@@ -90,13 +97,20 @@ public class DownloadService extends Service{
         if (ACTION_START.equals(intent.getAction())){
             //虽然每次都会getParcelableExtra，但实际上得到的对象hashCode()不一样。对象内容是相同的，但是引用不一样
             FileInfo fileInfo = intent.getParcelableExtra("mFileInfo");
+            //获取任务类型，是单任务单线程还是单任务多线程进行下载
+            mTaskFlag = intent.getStringExtra("task");
             //获取待下载的文件长度，如果已经获取就不再第二次获取。完事之后通知开始下载文件
             new GetFileLengthThread(fileInfo).start();
         }else if(ACTION_PAUSE.equals(intent.getAction())){
             FileInfo fileInfo = intent.getParcelableExtra("mFileInfo");
+            //获取任务类型，是单任务单线程还是单任务多线程进行下载
+            mTaskFlag = intent.getStringExtra("task");
             DownloadTask downloadTask = mDownloadTaskMap.get(fileInfo.getUrl());
-            if (downloadTask != null){
+            if (mTaskFlag.equals("one") && downloadTask != null){
                 downloadTask.setPause(true);//实际上是退出了线程，当重新开始下载时又开启了新线程
+            }else if (mTaskFlag.equals("much") && downloadTask != null){
+//                downloadTask.sendMessageToThreadForPause(true);
+                downloadTask.setPause(true);//单任务多线程有点问题
             }
         }
         return super.onStartCommand(intent, flags, startId);

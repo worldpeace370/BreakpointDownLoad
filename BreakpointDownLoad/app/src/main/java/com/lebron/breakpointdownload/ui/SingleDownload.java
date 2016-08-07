@@ -98,7 +98,8 @@ public class SingleDownload extends AppCompatActivity {
         //下载百分比可见
         mProText.setVisibility(View.VISIBLE);
         mFileName.setText(mFileInfo.getFileName());
-
+        //根据从数据库中查询来的下载信息，重新设置mFileInfo的两个属性
+        //当点击开始的时候，由于这两个属性已经有值了，就会省去重新计算文件长度的操作，加快速度
         mFileInfo.setLength(fileLength);
         mFileInfo.setGettedLength(isGettedLength);
     }
@@ -110,12 +111,16 @@ public class SingleDownload extends AppCompatActivity {
             case R.id.start:
                 intent.setAction(DownloadService.ACTION_START);
                 intent.putExtra("mFileInfo", mFileInfo);
+                //标识着对一个任务采用单任务单线程方式
+                intent.putExtra("task", "one");
                 mButtonStart.setEnabled(false);
                 mButtonPause.setEnabled(true);
                 break;
             case R.id.pause:
                 intent.setAction(DownloadService.ACTION_PAUSE);
                 intent.putExtra("mFileInfo", mFileInfo);
+                //标识着对一个任务采用单任务单线程方式
+                intent.putExtra("task", "one");
                 mButtonStart.setEnabled(true);
                 mButtonPause.setEnabled(false);
                 break;
@@ -132,7 +137,7 @@ public class SingleDownload extends AppCompatActivity {
                 int progress = bundle.getInt("finishing");
                 mProgressBar.setProgress(progress);
                 mProText.setText(new StringBuilder().append(progress).append("%"));
-                Log.i(TAG, "onReceive: 还在执行！");
+                Log.i(TAG, "onReceive: progress = " + progress);
             }else if (DownloadService.ACTION_UPDATE_FILEINFO_STATE.equals(action)){
                 //该mFileInfo的长度已经被得到了，下次点击开始的时候传入的mFileInfo的isGettedLength就是true了
                 Bundle bundle = intent.getExtras();

@@ -42,6 +42,12 @@ public class DownloadInfoManagerImpl implements DownloadInfoMannager{
         db.close();
     }
 
+    public void deleteDownloadInfoByUrl(String url) {
+        SQLiteDatabase db = myDBHelper.getWritableDatabase();
+        db.execSQL("delete from download_info where url = ?", new Object[]{url});
+        db.close();
+    }
+
     @Override
     public void updateDownloadInfo(String url, int id, long finished, int progress) {
         SQLiteDatabase db = myDBHelper.getWritableDatabase();

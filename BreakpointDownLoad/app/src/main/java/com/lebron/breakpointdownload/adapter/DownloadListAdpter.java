@@ -45,6 +45,9 @@ public class DownloadListAdpter extends BaseAdapterHelper<FileInfo>{
             holder = (ViewHolder) convertView.getTag();
         }
         int progress = (int) info.getProgress();
+        if (progress > 0){
+            holder.proText.setVisibility(View.VISIBLE);
+        }
         holder.name.setText(info.getFileName());
         holder.progressBar.setProgress(progress);
         holder.proText.setText(new StringBuffer().append(progress).append("%"));
@@ -56,6 +59,8 @@ public class DownloadListAdpter extends BaseAdapterHelper<FileInfo>{
                 Intent intent = new Intent(mContext, DownloadService.class);
                 intent.setAction(DownloadService.ACTION_START);
                 intent.putExtra("mFileInfo", info);
+                //标识着对一个任务采用单任务多线程方式
+                intent.putExtra("task", "much");
                 mContext.startService(intent);
                 holder.start.setEnabled(false);
                 holder.pasue.setEnabled(true);
@@ -67,6 +72,8 @@ public class DownloadListAdpter extends BaseAdapterHelper<FileInfo>{
                 Intent intent = new Intent(mContext, DownloadService.class);
                 intent.setAction(DownloadService.ACTION_PAUSE);
                 intent.putExtra("mFileInfo", info);
+                //标识着对一个任务采用单任务多线程方式
+                intent.putExtra("task", "much");
                 mContext.startService(intent);
                 holder.start.setEnabled(true);
                 holder.pasue.setEnabled(false);
