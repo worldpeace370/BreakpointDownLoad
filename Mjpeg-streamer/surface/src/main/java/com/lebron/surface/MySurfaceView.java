@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -16,7 +17,20 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private CircleThread mCircleThread;
 
     public MySurfaceView(Context context) {
-        super(context);
+        this(context, null);
+    }
+    //默认会调用两个参数的构造方法
+    public MySurfaceView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+    /**
+     * 获得我自定义的样式属性
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     */
+    public MySurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         init();
     }
 
